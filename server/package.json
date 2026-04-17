@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@react-email/components": "^1.0.11",
+    "axios": "^1.15.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mailer": "^0.6.7",
+    "mongoose": "^9.4.1",
+    "multer": "^2.1.1",
+    "node": "^25.9.0",
+    "nodemailer": "^6.10.1",
+    "nodemon": "^3.1.14",
+    "resend": "^6.10.0"
+  }
+}
