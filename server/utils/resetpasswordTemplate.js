@@ -20,7 +20,7 @@ const otpTemplate = (fullName, otp) => {
 
         <p>This OTP is valid for 10 minutes.</p>
 
-        <a href="${process.env.CLIENT_URI}/verify-otp"
+        <a href="${process.env.CLIENT_URI}/enter-otp"
           style="display:inline-block; margin-top:20px; padding:12px 25px; background:linear-gradient(135deg,#ec4899,#7c3aed); color:white; border-radius:6px; text-decoration:none;">
           Verify OTP →
         </a>
