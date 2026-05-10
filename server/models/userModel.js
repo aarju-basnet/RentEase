@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { type } = require('node:os');
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -7,6 +6,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please enter your full name'],
         trim: true
     },
+
     email: {
         type: String,
         required: [true, 'Please enter your email'],
@@ -14,30 +14,62 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
+
     phoneNumber: {
         type: String,
         required: [true, 'Please enter your phone number'],
         trim: true
     },
+
     password: {
         type: String,
         required: [true, 'Please enter a password'],
         minlength: [8, 'Password must be at least 8 characters']
     },
-    resetpassword:{
-        type:String,
+
+    resetpassword: {
+        type: String,
         default: ''
     },
-    resetpasswordexpiredAt:{
-        type:Number,
-        default:0
+
+    resetpasswordexpiredAt: {
+        type: Number,
+        default: 0
     },
 
     role: {
         type: String,
-        enum: ['tenant', 'owner'], 
+        enum: ['tenant', 'owner'],
         default: 'tenant'
-    }
+    },
+
+    // 🆕 OWNER PAYMENT DETAILS (ADDED FEATURE)
+    paymentDetails: {
+        bankName: {
+            type: String,
+            default: ""
+        },
+
+        accountNumber: {
+            type: String,
+            default: ""
+        },
+
+        accountHolder: {
+            type: String,
+            default: ""
+        },
+
+        qrImage: {
+            type: String, // store image URL (Cloudinary / local path)
+            default: ""
+        }
+    },
+    isPaid: {
+    type: Boolean,
+    default: false
+  },
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

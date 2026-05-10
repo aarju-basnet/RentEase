@@ -316,28 +316,135 @@ export const bulkDeleteProperties = (ids) =>
 export const deleteAllRejected = () =>
   API.delete('/properties/delete-rejected/all');
 
-
 export const initiateBooking = async (bookingData) => {
   try {
    
     const response = await API.post('/booking/initiate', bookingData);
-    
-   
     return response.data;
   } catch (error) {
     console.error("Booking Initiation Error:", error.response?.data || error.message);
+    
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+export const verifyBookingPayment = async (bookingId) => {
+  try {
+    // We send a POST request with the specific Booking ID
+    const response = await API.post('/booking/verify-manual', { bookingId });
+    return response.data;
+  } catch (error) {
+    console.error("Manual Verification Error:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+
+export const setupPayment = (data) => {
+    return API.put("/auth/payment-setup", data, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+};
+
+
+export const getTenantDetails = async () => {
+  try {
+    // FIX: Match the backend route (GET) and remove the non-existent variable
+    const response = await API.get('/booking/get-tenant-details'); 
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+
+// Fetch a single booking by ID
+export const getBookingById = async (id) => {
+  try {
+    const response = await API.get(`/booking/details/${id}`);
+    return response.data;
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const updateBookingStatus = async (id, status) => {
+    const response = await API.put(`/booking/update-status/${id}`, 
+      { status });
+    return response.data;
+};
+
+
+export const getTenantBookings = async () => {
+  try {
+   
+    const response = await API.get('/booking/my-bookings') 
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+}
+
+export const acceptBooking = async (bookingId) => {
+  try {
+    const res = await API.put(`/booking/${bookingId}/accept`);
+    return res.data;
+  } catch (error) {
+    console.error("Error accepting booking:", error);
     throw error;
   }
 };
 
 
-export const verifyPayment = async (pidx) => {
+export const getAllBookingsForAdmin = async () => {
   try {
-    
-    const response = await API.get(`/booking/verify?pidx=${pidx}`);
+    const response = await API.get('/booking/admin/all');
     return response.data;
   } catch (error) {
-    console.error("Payment Verification Error:", error.response?.data || error.message);
+    console.error("Error fetching admin bookings:", error);
     throw error;
+  }
+}
+
+export const deleteBooking = async (id) => {
+  try {
+    const response = await API.delete(`/booking/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+}
+
+// Create a new support ticket
+export const createSupportTicket = async (ticketData) => {
+  try {
+    // ticketData should be { subject, message }
+    const response = await API.post('/support', ticketData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || "Server Error";
+  }
+};
+
+
+export const processOwnerTransfer = async (ownerId) => {
+  try {
+ 
+    const response = await API.put(`/admin/transfer-to-owner/${ownerId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || "Server Error";
+  }
+};
+
+// Fetch bookings for the logged-in owner
+export const fetchOwnerBookings = async () => {
+  try {
+    const response = await API.get('/booking/my-bookings');
+    return response.data; // This returns { success: true, bookings: [...] }
+  } catch (error) {
+    throw error.response?.data || "Server Error";
   }
 };

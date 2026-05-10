@@ -33,6 +33,23 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+
+
+const createContact = async (formData) => {
+  try {
+    const { data } = await API.post("/contact", formData);
+
+    if (data.success) {
+      return { success: true, message: "Message sent successfully" };
+    }
+
+    return { success: false, message: "Something went wrong" };
+  } catch (error) {
+    return { success: false, message: error.response?.data?.message || "Server error" };
+  }
+}
+
+
  const register = async (formData) => {
   try {
     const { data } = await API.post('/auth/register', formData);
@@ -100,9 +117,15 @@ export const AuthProvider = ({ children }) => {
   };
 
 
+const updateUser = (updatedUser) => {
+  // This is the most important part: update BOTH the storage and the state
+  localStorage.setItem('rentease_user', JSON.stringify(updatedUser));
+  setUser(updatedUser);
+};
+
   return (
     <AuthContext.Provider value={{ user, login, register, logout, getDashboardPath ,
-      resetpasswords, enterotp
+      resetpasswords, enterotp, createContact, updateUser
     }}>
       {children}
     </AuthContext.Provider>

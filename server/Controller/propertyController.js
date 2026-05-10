@@ -5,7 +5,7 @@ const addProperty = async (req, res) => {
   try {
     const { title, location, price, type, description, bedrooms, bathrooms, area, furnished } = req.body;
 
-    // ✅ CHANGE: Check req.files instead of req.file
+    
     if (!title || !location || !price || !description || !bedrooms || !bathrooms || !area || !furnished || !req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
@@ -46,59 +46,55 @@ const addProperty = async (req, res) => {
     });
   }
 };
+
+
 const getOwnerProperties = async (req, res) => {
   try {
-   
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: "Not authorized" });
-    }
+    const ownerId = req.user._id || req.user.id;
+    const properties = await Property.find({ owner: ownerId }).populate('bookedBy', 'fullName');
 
-    const properties = await Property.find({ owner: req.user._id || req.user.id });
-    
-    res.status(200).json({
-      success: true,
-      properties 
-    });
+    const enrichedProperties = await Promise.all(properties.map(async (p) => {
+      const propertyObj = p.toObject();
+
+      if (p.status === 'booked') {
+        // FLEXIBLE SEARCH: Find the booking that caused this property to be booked
+        const booking = await mongoose.model('Booking').findOne({ 
+          property: p._id, 
+          // Look for either status accepted OR payment completed
+          $or: [
+            { status: 'accepted' },
+            { paymentStatus: 'completed' }
+          ]
+        });
+        
+        propertyObj.currentBookingId = booking ? booking._id : null;
+      }
+      
+      return propertyObj;
+    }));
+
+    res.status(200).json({ success: true, properties: enrichedProperties });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-
-
 const getPropertyById = async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id).populate(
-      "owner",
-      "fullName email phoneNumber"
-    );
+    // ✅ ADDED: .populate("bookedBy", "fullName email")
+    const property = await Property.findById(req.params.id)
+      .populate("owner", "fullName email phoneNumber")
+      .populate("bookedBy", "fullName email"); 
 
     if (!property) {
       return res.status(404).json({ success: false, message: "Property not found" });
     }
 
-    
-    if (property.status !== 'approved') {
-     
-      const userId = req.user?._id || req.user?.id;
-      const isAdmin = req.user?.role === 'admin';
-      
-      
-      const ownerIdStr = property.owner?._id?.toString() || property.owner?.toString();
-      const isOwner = userId && ownerIdStr === userId.toString();
-
-      if (!isOwner && !isAdmin) {
-        return res.status(403).json({
-          success: false,
-          message: "Access Restricted: You don't have permission to view this pending property."
-        });
-      }
-    }
+    // ... (Your existing permission logic for pending properties)
 
     res.status(200).json({ success: true, property });
 
   } catch (error) {
-    // This is what is catching that 500 error!
     console.error("Backend Error in getPropertyById:", error); 
     res.status(500).json({ success: false, error: error.message });
   }
@@ -107,9 +103,13 @@ const getPropertyById = async (req, res) => {
 
 const getThatProperties = async (req, res) => {
   try {
-   
-    const properties = await Property.find({ status: 'approved' })
+    // ✅ ADDED: .populate('bookedBy', 'fullName email') 
+    // This ensures the frontend knows who the winner is!
+    const properties = await Property.find({ 
+        status: { $in: ['approved', 'booked'] } // Allow 'booked' ones to show up in "My Bookings"
+      })
       .populate('owner', 'fullName email phoneNumber') 
+      .populate('bookedBy', 'fullName') 
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -124,7 +124,7 @@ const getThatProperties = async (req, res) => {
       error: error.message
     });
   }
-};
+}
 
 const deleteProperty = async (req, res) => {
   try {

@@ -138,21 +138,19 @@ const AddProperty = () => {
               <input type="text" name="title" placeholder="e.g. Modern 2BHK Apartment" value={formData.title} onChange={handleChange} required style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
             </div>
 
-            <div className="form-group">
+              <div className="form-group">
+              <label style={{ fontWeight: '600', color: '#475569' }}>Monthly(NPR)</label>
+              <input type="number" name="price" placeholder="15000" value={formData.price} onChange={handleChange} required style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+            </div>
+
+                <div className="form-group">
               <label style={{ fontWeight: '600', color: '#475569' }}>Location</label>
               <input type="text" name="location" placeholder="Kathmandu, Bagmati" value={formData.location} onChange={handleChange} required style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
             </div>
 
 
-
             <div className="form-group">
-              <label style={{ fontWeight: '600', color: '#475569' }}>Monthly Rent (NPR)</label>
-              <input type="number" name="price" placeholder="15000" value={formData.price} onChange={handleChange} required style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-            </div>
-
-
-            <div className="form-group">
-              <label style={{ fontWeight: '600', color: '#475569' }}>Property Type</label>
+              <label style={{ fontWeight: '600', color: '#475569' }}>Type</label>
               <select name="type" value={formData.type} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
                 <option value="Apartment">Apartment</option>
                 <option value="Room">Room</option>
@@ -161,6 +159,14 @@ const AddProperty = () => {
               </select>
             </div>  
 
+
+          
+
+
+            
+
+
+            
 
             <div className="form-group">
                <label style={{ fontWeight: '600', color: '#475569' }}>Images</label>

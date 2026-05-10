@@ -173,7 +173,8 @@ const PropertyDetails = () => {
                 {property.owner?.name?.charAt(0) || 'O'}
               </div>
               <div>
-                <div className="owner-name">{property.owner?.name || "Property Owner"}</div>
+                <div className="owner-name">{property.owner?.fullName || "Property Owner"}</div>
+                <div className="owner-name">{property.owner?.phoneNumber || "Property Owner"}</div>
                 <div className="owner-role">Verified Host</div>
               </div>
             </div>

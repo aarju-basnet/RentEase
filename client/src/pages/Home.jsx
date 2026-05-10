@@ -5,9 +5,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import PropertyCard from '../components/PropertyCard';
 import SearchBar from '../components/SearchBar';
 import { mockProperties } from '../services/api';
+import { useContext } from "react";
+import  AuthContext  from '../contexts/AuthContext'
 
 const Home = () => {
   const navigate = useNavigate();
+  const { createContact } = useContext(AuthContext);
+
+  const [fullName, setFullName] = useState('')
+  const[emailAddress, setEmailAddress] = useState('')
+  const[message, setMessage] = useState('')
 
   // Search filter state
   const [filters, setFilters] = useState({
@@ -17,6 +24,28 @@ const Home = () => {
     type: '',
   });
 
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await createContact({
+      fullName,
+      emailAddress,
+      message,
+    });
+
+
+  if (res.success) {
+    alert(res.message);
+    setFullName('')
+    setEmailAddress('')
+    setMessage('')
+  } else {
+    alert(res.message);
+  }
+};
+ 
   // Animated counter state
   const [counters, setCounters] = useState({ properties: 0, users: 0, rate: 0 });
   const statsRef = useRef(null);
@@ -324,37 +353,39 @@ const Home = () => {
 
             {/* Right Side: Form */}
             <div className="contact-form-card">
-              <form onSubmit={(e) => e.preventDefault()}>
-                <div className="contact-form-row">
-                  <div className="contact-form-group">
-                    <label htmlFor="fullName">Full Name</label>
-                    <input type="text" id="fullName" placeholder="" />
-                  </div>
-                  <div className="contact-form-group">
-                    <label htmlFor="emailAddress">Email Address</label>
-                    <input type="email" id="emailAddress" placeholder="" />
-                  </div>
-                </div>
+             <form onSubmit={handleSubmit}>
+  <div className="contact-form-row">
+    <div className="contact-form-group">
+      <label htmlFor="fullName">Full Name</label>
+      <input
+        type="text"
+        value={fullName}
+        onChange={(e) => setFullName(e.target.value)}
+      />
+    </div>
 
-                {/* <div className="contact-form-group">
-                  <label htmlFor="subject">Subject</label>
-                  <select id="subject">
-                    <option value="">Select a subject</option>
-                    <option value="support">General Support</option>
-                    <option value="feedback">Feedback</option>
-                    <option value="partnership">Partnership</option>
-                  </select>
-                </div> */}
+    <div className="contact-form-group">
+      <label htmlFor="emailAddress">Email Address</label>
+      <input
+        type="email"
+        value={emailAddress}
+        onChange={(e) => setEmailAddress(e.target.value)}
+      />
+    </div>
+  </div>
 
-                <div className="contact-form-group">
-                  <label htmlFor="message">Message</label>
-                  <textarea id="message" placeholder="Tell us how we can help you..."></textarea>
-                </div>
+  <div className="contact-form-group">
+    <label htmlFor="message">Message</label>
+    <textarea
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+    />
+  </div>
 
-                <button type="submit" className="btn-teal">
-                  <span style={{ marginRight: '8px' }}>🚀</span> Send Message
-                </button>
-              </form>
+  <button type="submit" className="btn-teal">
+    🚀 Send Message
+  </button>
+</form>
             </div>
           </div>
         </div>

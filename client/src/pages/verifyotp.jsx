@@ -125,7 +125,7 @@ const VerifyOTP = () => {
                 <span className="login-field-icon">🔢</span>
                 Enter 6-Digit OTP
               </label>
-              <div 
+              <div className='boxes'
                 style={{ 
                   display: 'flex', 
                   gap: '10px', 

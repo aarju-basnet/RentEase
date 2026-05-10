@@ -15,6 +15,23 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.navbar')) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [menuOpen]);
+
   const closeMenu = () => setMenuOpen(false);
 
   const handleLogout = () => {
@@ -33,9 +50,9 @@ const Navbar = () => {
           RentEase
         </NavLink>
 
-        {/* Toggle Button */}
+        {/* Toggle Button (HAMBURGER → X) */}
         <button
-          className="navbar-toggle"
+          className={`navbar-toggle ${menuOpen ? "open" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle navigation"
         >
@@ -46,6 +63,7 @@ const Navbar = () => {
 
         {/* Links */}
         <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
+
           <NavLink to="/" onClick={closeMenu}>
             🏠 Home
           </NavLink>
@@ -60,7 +78,7 @@ const Navbar = () => {
                 📊 Dashboard
               </NavLink>
 
-              {/* PROFILE CIRCLE */}
+              {/* PROFILE */}
               <div className="navbar-profile">
                 <div className="profile-circle">
                   {user?.name?.charAt(0).toUpperCase()}
@@ -83,6 +101,7 @@ const Navbar = () => {
             </>
           )}
         </div>
+
       </div>
     </nav>
   );

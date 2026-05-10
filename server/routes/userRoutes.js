@@ -1,7 +1,8 @@
 const express = require('express')
+const multer  = require('multer')
 const router = express.Router()
 
-const {register, login, logout, sendotp, verifyotp} = require('../Controller/userController')
+const {register, login, logout, sendotp, verifyotp, setupPayment} = require('../Controller/userController')
 const {tenantDashboard, ownerDashboard, adminDashboard } = require('../Controller/dashboardController')
 const{protect, authorizeRoles} = require('../middleware/authMiddleware')
 
@@ -16,6 +17,21 @@ router.get('/admin/dashboard', protect, authorizeRoles('admin'), adminDashboard)
 
 router.post('/reset-password', sendotp)
 router.post('/enter-otp', verifyotp)
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage });
+
+
+
+
+router.put("/payment-setup", protect, upload.single('qrImage'), setupPayment);
 
 module.exports = router
 

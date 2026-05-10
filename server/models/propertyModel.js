@@ -12,7 +12,13 @@ const propertySchema = new mongoose.Schema({
   area: { type: String },
   furnished: { type: String, default: 'Unfurnished' },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' } // <-- new
+  status: { type: String, enum: ['pending', 'approved', 'rejected', 'booked'], default: 'pending' },
+  bookedBy: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    default: null 
+  } 
+  
 }, { timestamps: true });
 
 const propertyModel =  mongoose.model('Property', propertySchema)

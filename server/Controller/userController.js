@@ -121,7 +121,8 @@ async function login(req, res) {
         _id: user._id,
         name: user.fullName,
         email: user.email,
-        role: user.role 
+        role: user.role ,
+        paymentDetails:user.paymentDetails
       }
     })
   } catch (error) {
@@ -240,12 +241,12 @@ async function verifyotp(req, res) {
         // 4. Expiry Validation
         if (user.resetpasswordexpiredAt < Date.now()) {
             return res.status(400).json({
-                success: false, // Changed from False to false
+                success: false, 
                 message: "OTP has expired"
             });
         }
 
-        // 5. Hash and Save (Use 'password' from the destructuring above)
+        
         const hashPassword = await bcrypt.hash(password, 10);
         user.password = hashPassword;
         user.resetpassword = '';
@@ -261,17 +262,61 @@ async function verifyotp(req, res) {
     } catch (err) {
         console.error("VERIFY OTP ERROR:", err);
         return res.status(500).json({
-            success: false, // Changed from False to false
+            success: false, 
             message: "Internal server error"
         });
     }
 }
 
 
+async function setupPayment(req, res) {
+ try {
+        // Use optional chaining and check both id and _id
+        const userId = req.user?.id || req.user?._id;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "User not authenticated" });
+        }
+
+        const { bankName, accountNumber, accountHolder } = req.body;
+
+        // This is where "User" was throwing the error
+        const user = await userModel.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        let qrPath = user.paymentDetails?.qrImage || "";
+        if (req.file) {
+            qrPath = req.file.path.replace(/\\/g, '/');
+        }
+
+        user.paymentDetails = {
+            bankName: bankName || "",
+            accountNumber: accountNumber || "",
+            accountHolder: accountHolder || "",
+            qrImage: qrPath
+        };
+
+        await user.save();
+
+        res.json({
+            success: true,
+            message: "Payment details updated successfully",
+            paymentDetails: user.paymentDetails
+        });
+    } catch (error) {
+        console.error("Setup Payment Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
 module.exports = { register ,
     login,
     logout,
     sendotp,
-    verifyotp
+    verifyotp,
+    setupPayment
 }
 

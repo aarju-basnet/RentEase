@@ -14,6 +14,8 @@ import Resetpassword from './pages/resetpassword'
 import PropertyDetails from './pages/PropertyDetails';
 import AddProperty from './pages/AddProperty'
 import Verifyotp from './pages/verifyotp'
+import BookingDetails from './pages/BookingDetails'
+import SupportPage from './pages/SupportPage';
 
 function App() {
   return (
@@ -29,6 +31,7 @@ function App() {
         <Route path='/reset-password' element={<Resetpassword/>}/>
         <Route path="/properties/:id" element={<PropertyDetails />} />
         <Route path='/enter-otp' element={<Verifyotp/>}/>
+        <Route path='/support' element={<SupportPage/>}/>
 
         {/* 🔒 Tenant Routes */}
         <Route element={<ProtectedRoute allowedRoles={['tenant']} />}>
@@ -39,6 +42,7 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={['owner']} />}>
           <Route path="/owner/dashboard" element={<OwnerDashboard />} />
           <Route path='/add-property' element={<AddProperty/>}/>
+       <Route path='/booking-details/:id' element={<BookingDetails/>}/>
         </Route>
 
         {/* 🔒 Admin Routes */}
